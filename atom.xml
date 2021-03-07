@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://wingkui.github.io</id>
     <title>Wi</title>
-    <updated>2021-03-07T16:03:48.862Z</updated>
+    <updated>2021-03-07T16:09:43.479Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://wingkui.github.io"/>
     <link rel="self" href="https://wingkui.github.io/atom.xml"/>
@@ -11,13 +11,100 @@
     <icon>https://wingkui.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Wi</rights>
     <entry>
-        <title type="html"><![CDATA[测试]]></title>
+        <title type="html"><![CDATA[C# 枚举]]></title>
         <id>https://wingkui.github.io/post/ce-shi/</id>
         <link href="https://wingkui.github.io/post/ce-shi/">
         </link>
         <updated>2021-03-07T15:39:04.000Z</updated>
         <content type="html"><![CDATA[<h2 id="标题">标题</h2>
-<p>正文内容</p>
+<h1 id="c-枚举">C# 枚举</h1>
+<h2 id="简介">简介</h2>
+<ol>
+<li>枚举（enum type）通常用来表示一组常量。由于枚举是强类型的，这在编程中给我们提供了极大的方便。</li>
+<li>枚举的定义：</li>
+</ol>
+<pre><code class="language-csharp">public enum Sex {
+            man = 1,
+            woman = 0
+        }
+</code></pre>
+<p>或者：如果只给男赋值，那么女=1</p>
+<pre><code class="language-csharp">public enum Sex {
+            man = 1,
+            woman
+        }
+</code></pre>
+<h2 id="枚举在软件开发中的使用场景">枚举在软件开发中的使用场景</h2>
+<p>在数据库设计人员表(person)时有性别字段Sex(0代表男，1代表女)，我们一般用bit或者int类型表示。</p>
+<p>1.在编程时我们给Sex字段赋值的方式为：</p>
+<p>1). Sex=0;</p>
+<p>2). Sex=(int)SexEnum.Man;</p>
+<p>其中SexEnum为定义性别的枚举类型，我们可以看出第二种方式的可读性更强。</p>
+<p>2.在编程时我们，如果Sex字段作为一个搜索条件的话，我们可能需要以下拉选择的方式展现所有可以选择的情况。那么我们就需要将SexEnum转换成一个字典集合然后绑定到对应的select标签，具体怎么实现请看下面的示例代码。</p>
+<h2 id="enum-int-string三种类型之间的互转">enum、int、string三种类型之间的互转</h2>
+<pre><code class="language-csharp">int a = (int)Sex.woman;
+Console.WriteLine(&quot;将枚举转化成整数:&quot;+a);
+
+string b = Sex.woman.ToString();
+Console.WriteLine(&quot;将枚举转化成字符串:&quot; + b);
+
+Sex c = (Sex)Enum.Parse(typeof(Sex),&quot;woman&quot;);
+Console.WriteLine(&quot;将字符串转化成枚举:&quot; + c.ToString());
+
+Sex d = (Sex)1;
+Console.WriteLine(&quot;将整数转换成枚举&quot; + d.ToString());
+
+string s = Enum.GetName(typeof(Sex),1);
+Console.WriteLine(&quot;将枚举的整数转化为枚举的字符串:&quot;+s);
+
+foreach (Sex sex in Enum.GetValues(typeof(Sex))) {
+    Console.WriteLine(&quot;循环枚举&quot;+sex.ToString()+&quot;=&quot;+(int)sex);
+}
+
+Console.ReadLine();//等待用户回车,一次只读一行
+</code></pre>
+<h2 id="获取描述信息">获取描述信息</h2>
+<p>修改枚举如下：</p>
+<pre><code class="language-csharp">public enum Sex {
+            [Description(&quot;男&quot;)]
+            man = 1,
+            [Description(&quot;女&quot;)]
+            woman = 0
+        }
+</code></pre>
+<p>获取描述信息代码如下：</p>
+<pre><code class="language-csharp"> Type enumType = Sex.woman.GetType();
+FieldInfo fieldInfo = enumType.GetField(Enum.GetName(typeof(Sex), 0));
+DescriptionAttribute attr = Attribute.GetCustomAttribute(
+    fieldInfo,
+    typeof(DescriptionAttribute),
+    false
+    ) as DescriptionAttribute;
+Console.WriteLine(&quot;描述信息:&quot; + attr.Description);//描述信息:女
+</code></pre>
+<h2 id="获取枚举值描述信息的方法">获取枚举值描述信息的方法</h2>
+<pre><code class="language-csharp">public static string GetEnumDescription(Enum value) {
+            if (value == null)
+                return &quot;&quot;;
+
+            System.Reflection.FieldInfo fieldInfo = value.GetType().GetField(value.ToString());
+
+            object[] attribArray = fieldInfo.GetCustomAttributes(false);
+            if (attribArray.Length == 0)
+                return value.ToString();
+            else
+                return (attribArray[0] as DescriptionAttribute).Description;
+        }
+</code></pre>
+<h3 id="使用">使用</h3>
+<pre><code class="language-csharp">GetEnumDescription(Sex.Man)
+</code></pre>
+<h2 id="检查type实例是否为c中的可枚举枚举">检查Type实例是否为C＃中的可枚举枚举？</h2>
+<pre><code class="language-csharp">int n =1;
+Type t = n.GetMyType();
+bool isEnum = t.IsEnum; //false
+</code></pre>
+<p><strong>注意:百度[ Type] 的实例属性</strong></p>
 ]]></content>
     </entry>
 </feed>
